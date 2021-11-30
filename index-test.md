@@ -1,3 +1,7 @@
+## TEST
+
+![image info](./data_viz/test.png)
+
 ## Welcome to GitHub Pages
 
 You can use the [editor on GitHub](https://github.com/paparon96/Sustainability/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.

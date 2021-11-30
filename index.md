@@ -1,6 +1,6 @@
 ## TEST
 
-![image info](./data_viz/test.png)
+![image info](./data_viz/carbon_pulse_coverage_hist_page_num_0_200.png)
 
 ## Welcome to GitHub Pages
 

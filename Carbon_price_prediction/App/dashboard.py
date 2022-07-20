@@ -2,14 +2,29 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+# Custom functions
+@st.cache
+def convert_df(df):
+   return df.to_csv().encode('utf-8')
+
 # Parameters
 methodology = 'tf_idf' # 'tf_idf' or 'bag_of_words'
 data_source = 'gdelt' # 'gdelt'
 glossary_source = 'lemmatized_grouped_custom' # 'BBC' or 'IPCC' or 'custom' or 'lemmatized_custom'
 version = '' # 'new' or '' for old (in case of BBC), otherwise use ''
 rolling_mean_length = 30
+dep_var = 'carbon_price'
+rolling_corr_length = 30
 
-st.title('Carbon market dashboard')
+# Constants
+control_var_name_map = {'gas_price': 'gas prices',
+'oil_price': 'oil prices',
+'carbon_price': 'carbon prices',
+'energy_price': 'electricity prices',
+'coal_price': 'coal prices',
+'stock_market_index_level': 'stock market index',}
+
+st.title('EU ETS market dashboard')
 
 daily_prices = pd.read_csv( "../Data/merged_dataset.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
@@ -26,11 +41,25 @@ tmp_daily_prices = daily_prices.copy()
 tmp_daily_prices.index = tmp_daily_prices.index.to_series().apply(lambda x: x.strftime('%Y-%m-%d'))
 st.dataframe(tmp_daily_prices)
 
+st.download_button(
+   "Download data",
+   convert_df(tmp_daily_prices),
+   "daily_prices.csv",
+   "text/csv",
+   key='download-csv'
+)
+
 selected_col = st.sidebar.selectbox('Select variable to compare to carbon price',
                                    list(daily_prices.columns))
 
-st.subheader('Daily EU ETS carbon prices and selected other variables')
-st.line_chart(daily_prices[['carbon_price', selected_col]])
+st.subheader(f'Daily EU ETS carbon prices and {control_var_name_map[selected_col]}')
+st.line_chart(daily_prices[[dep_var, selected_col]])
+
+# Return correlation plot
+ret_df = daily_prices.pct_change()
+corr_ts = ret_df[dep_var].rolling(rolling_corr_length).corr(ret_df[selected_col])
+st.subheader(f'Rolling {rolling_corr_length}-days correlation between returns of EU ETS carbon prices and selected other variables')
+st.line_chart(corr_ts)
 
 
 st.subheader('Raw data on TF-IDF scores')

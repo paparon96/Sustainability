@@ -4,7 +4,7 @@ import pandas as pd
 
 # Parameters
 start_date = '2022-07-25'
-end_date = '2022-08-01'
+end_date = '2022-08-23'
 dates = [start_date, end_date]
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]
 
@@ -15,6 +15,10 @@ events = gd.Search(dates, table='events', output='gpd',
 
 # Data preprocessing
 filtered_events = events[events.actor1name.isin(actor_filters)]
+filtered_events = filtered_events.drop_duplicates(subset=['sourceurl', 'sqldate'])
+print(filtered_events.head())
 
-urls = list(filtered_events.sourceurl)
-print(urls)
+filtered_events = filtered_events[['globaleventid', 'sqldate', 'sourceurl']]
+
+# Export dataset
+filtered_events.to_csv('./data/gdelt_events.csv', index=False)

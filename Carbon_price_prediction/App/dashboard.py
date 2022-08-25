@@ -41,14 +41,6 @@ tmp_daily_prices = daily_prices.copy()
 tmp_daily_prices.index = tmp_daily_prices.index.to_series().apply(lambda x: x.strftime('%Y-%m-%d'))
 st.dataframe(tmp_daily_prices)
 
-st.download_button(
-   "Download data",
-   convert_df(tmp_daily_prices),
-   "daily_prices.csv",
-   "text/csv",
-   key='download-csv'
-)
-
 selected_col = st.sidebar.selectbox('Select variable to compare to carbon price',
                                    list(daily_prices.columns))
 
@@ -66,6 +58,14 @@ st.subheader('Raw data on TF-IDF scores')
 tmp_tf_idf = tf_idf.copy()
 tmp_tf_idf.index = tmp_tf_idf.index.to_series().apply(lambda x: x.strftime('%Y-%m-%d'))
 st.dataframe(tmp_tf_idf)
+
+st.download_button(
+   "Download data",
+   convert_df(tmp_tf_idf),
+   "daily_tf_idf.csv",
+   "text/csv",
+   key='download-csv'
+)
 
 
 selected_keyword_group = st.sidebar.selectbox('Select keyword group for TF-IDF score time series analysis',

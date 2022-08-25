@@ -3,8 +3,8 @@ import gdelt
 import pandas as pd
 
 # Parameters
-start_date = '2022-07-25'
-end_date = '2022-08-23'
+start_date = '2022-01-01'
+end_date = '2022-08-24'
 dates = [start_date, end_date]
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]
 

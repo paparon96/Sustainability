@@ -1,6 +1,6 @@
 Data collection/processing steps:
-1. Run `python gdelt_data_extract.py`
-2. Run `python url_data_extract.py`
+1. Run `time python gdelt_data_extract.py`
+2. Run `time python url_data_extract.py`
 
 
 Running the app

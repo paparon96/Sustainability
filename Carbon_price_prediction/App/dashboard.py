@@ -1,7 +1,10 @@
-import streamlit as st
 import pandas as pd
 import numpy as np
+
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+import streamlit as st
 
 # Custom functions
 @st.cache
@@ -116,6 +119,26 @@ selected_keyword_group = st.sidebar.selectbox('Select keyword group for TF-IDF s
 st.subheader(f'TF-IDF score history for keyword group: {selected_keyword_group} \
 ({rolling_mean_length}-days moving average)')
 st.line_chart(tf_idf[[list(tf_idf.columns)[0], selected_keyword_group]].rolling(rolling_mean_length).mean())
+
+st.subheader(f'Carbon price time series and TF-IDF score history for keyword group: {selected_keyword_group} \
+({rolling_mean_length}-days moving average)')
+
+fig = plt.figure()
+
+ax1 = fig.add_subplot(111)
+ax1.plot(daily_prices[[dep_var]], label='EU ETS carbon price')
+ax1.set_ylabel('EU ETS carbon price')
+ax1.legend(loc=0)
+ax1.tick_params(axis='x', rotation=60)
+
+ax2 = ax1.twinx()
+ax2.plot(tf_idf[[selected_keyword_group]].rolling(rolling_mean_length).mean(),
+         label=f'{selected_keyword_group} keyword score', color='darkorange')
+ax2.set_ylabel('TF-IDF score')
+ax2.legend(loc=1)
+ax2.tick_params(axis='x', rotation=60)
+
+st.pyplot(plt)
 
 st.markdown(
 """

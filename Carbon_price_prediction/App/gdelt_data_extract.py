@@ -4,13 +4,16 @@ import pandas as pd
 
 # Parameters
 start_date = '2022-08-15'
-end_date = '2022-08-20'
+end_date = '2022-08-15'
 dates = [start_date, end_date]
+prev_business_day = pd.to_datetime('today') - pd.tseries.offsets.BDay(1)
+date = prev_business_day.strftime("%Y-%m-%d")
+print(date)
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]
 
 # Data import
 gd = gdelt.gdelt()
-events = gd.Search(dates, table='events', output='gpd',
+events = gd.Search(date, table='events', output='gpd',
                    normcols=True, coverage=True)
 
 # Data preprocessing

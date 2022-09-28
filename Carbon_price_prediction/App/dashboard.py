@@ -39,6 +39,7 @@ keyword_var_name_map = {'0': 'Aggregated score',
 'renewables': 'Renewables',
 }
 
+#### DASHBOARD ####
 st.title('EU ETS market dashboard')
 
 st.markdown(
@@ -56,24 +57,24 @@ etctetctetetcetctectetc
 """
 )
 
+# Data import
+daily_prices = pd.read_csv( "../Data/new_merged_dataset.csv", index_col=0,
+                         parse_dates=True, dayfirst=True)
+daily_prices.index.name = 'date'
+
 start_date = st.sidebar.slider(
     "Analysis start date",
+    min_value=min(daily_prices.index).to_pydatetime(),
     value=datetime(2018, 1, 1),
+    max_value=max(daily_prices.index).to_pydatetime(),
     format="YYYY-MM-DD")
 
 end_date = st.sidebar.slider(
     "Analysis end date",
-    min_value=datetime(2018, 1, 1),
+    min_value=min(daily_prices.index).to_pydatetime(),
     value=datetime(2021, 11, 30),
-    max_value=datetime(2021, 12, 12),
+    max_value=max(daily_prices.index).to_pydatetime(),
     format="YYYY-MM-DD")
-
-daily_prices = pd.read_csv( "../Data/new_merged_dataset.csv", index_col=0,
-                         parse_dates=True, dayfirst=True)
-daily_prices = daily_prices[(daily_prices.index >= start_date) &
-                            (daily_prices.index <= end_date)]
-daily_prices.index.name = 'date'
-daily_prices.head()
 
 tf_idf = pd.read_csv(f'../Data/signals/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
                      index_col=0, parse_dates=True)
@@ -87,8 +88,11 @@ tf_idf_aggr.index.name = 'date'
 tf_idf = tf_idf.join(tf_idf_aggr)
 tf_idf = tf_idf.rename(columns = keyword_var_name_map)
 
-# Filter TF-IDF dataframe for the relevant date range
-tf_idf = tf_idf.loc[(tf_idf.index >= start_date) & (tf_idf.index <= end_date)]
+# Filter control and TF-IDF dataframe for the relevant date range
+daily_prices = daily_prices[(daily_prices.index >= start_date) &
+                            (daily_prices.index <= end_date)]
+tf_idf = tf_idf.loc[(tf_idf.index >= start_date) &
+                    (tf_idf.index <= end_date)]
 
 
 if control_data_display:

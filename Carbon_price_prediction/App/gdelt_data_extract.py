@@ -3,10 +3,8 @@ import gdelt
 import pandas as pd
 
 # Parameters
-start_date = '2022-08-15'
-end_date = '2022-08-15'
-dates = [start_date, end_date]
-prev_business_day = pd.to_datetime('today') - pd.tseries.offsets.BDay(1)
+prev_date_offset = 1
+prev_business_day = pd.to_datetime('today') - pd.tseries.offsets.BDay(prev_date_offset)
 date = prev_business_day.strftime("%Y-%m-%d")
 print(date)
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]

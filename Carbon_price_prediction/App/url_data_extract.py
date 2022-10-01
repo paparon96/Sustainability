@@ -5,12 +5,20 @@ import pandas as pd
 
 from goose3 import Goose
 
+
+# Parameters
+problematic_urls = ['sputniknews.com', 'confidencial.digital']
+
 extractor = Goose()
 
 async def fetch(session, url):
     async with session.get(url) as response:
         if response.status != 200:
             return None
+        # if 'utf-8' not in response.headers['Content-Type'].lower():
+        # if response.headers['Content-Type'].lower() == 'text/html':
+        #     print(response.headers['Content-Type'])
+        #     return None
         return await response.text()
 
 async def fetch_all(session, urls):
@@ -24,13 +32,15 @@ async def fetch_all(session, urls):
 async def main():
     filtered_events = pd.read_csv('./data/gdelt_events.csv')
     urls = list(filtered_events.sourceurl)
+    # Filter out problematic URL-s
+    urls = [url for url in urls if all([problematic_url not in url for problematic_url in problematic_urls])]
     async with aiohttp.ClientSession() as session:
         htmls = await fetch_all(session, urls)
         df = pd.DataFrame({'url': urls, 'html': htmls})
         df['text'] = df['html'].apply(lambda x: extractor.extract(raw_html=x).cleaned_text if x is not None else x)
         df = filtered_events.merge(df[['url', 'text']],
                                    left_on='sourceurl', right_on='url')
-        df[['sqldate', 'text']].to_csv('./data/article_text.csv', index=False)
+        df[['globaleventid', 'sqldate', 'text']].to_csv('./data/article_text.csv', index=False)
 
 if __name__ == '__main__':
     asyncio.run(main())

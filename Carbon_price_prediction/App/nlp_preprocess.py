@@ -1,5 +1,6 @@
 import pandas as pd
 
+import os.path
 import string
 import re
 import nltk
@@ -29,7 +30,7 @@ RE_VALID = '[a-zA-Z]'
 # NLP preprocessing
 
 # Convert DataFrame columns to list of tuples
-raw_text_iter = list(zip(raw_text.date, raw_text.text))
+raw_text_iter = list(zip(raw_text.globaleventid, raw_text.date, raw_text.text))
 
 # Get stopwords, stemmer and lemmatizer
 stopwords = nltk.corpus.stopwords.words('english')
@@ -41,7 +42,7 @@ lemmatized_results = []
 
 counter = 0
 
-for date, text in raw_text_iter:
+for globaleventid, date, text in raw_text_iter:
 
     if counter % 1000 == 0:
         print(f"Iteration: {counter + 1}/{len(raw_text_iter)}")
@@ -84,18 +85,30 @@ for date, text in raw_text_iter:
 
     # Build list of strings from lemmatized tokens
     str_lemmas = ' '.join(lemmas)
-    lemmatized_results.append((date, str_lemmas))
+    lemmatized_results.append((globaleventid, date, str_lemmas))
 
     # Increment counter
     counter += 1
 
 
 lemmatized_text_df = pd.DataFrame(lemmatized_results)
-lemmatized_text_df.columns = ['date', 'lemmatized_text']
+lemmatized_text_df.columns = ['globaleventid', 'date', 'lemmatized_text']
 
 print(lemmatized_text_df.shape)
 print(lemmatized_text_df.head())
 
 
 # Export results
-lemmatized_text_df.to_csv(f'./data/lemmatized_merged_articles.csv')
+fname = './data/lemmatized_merged_articles.csv'
+if os.path.isfile(fname):
+    print("Appending to existing file")
+    text_df = pd.read_csv( "./data/lemmatized_merged_articles.csv", index_col=0)
+    print(text_df.shape)
+    print(lemmatized_text_df.shape)
+    lemmatized_text_df = pd.concat([text_df, lemmatized_text_df])
+    print(lemmatized_text_df.shape)
+    lemmatized_text_df.to_csv(fname)
+
+else:
+    print("Creating new file")
+    lemmatized_text_df.to_csv(fname)

@@ -21,7 +21,7 @@ for ngram in ngrams:
     sparse_matrix = vects
 
     # Import climate change keyword list
-    carbon_keywords = pd.read_csv( "./data/keyword_lists/revised_keyword_list.csv")
+    carbon_keywords = pd.read_csv("./data/keyword_lists/revised_keyword_list.csv")
     carbon_keywords['keywords'] = carbon_keywords['keywords'].\
                                   apply(lambda x: x.lower())
 
@@ -38,9 +38,8 @@ for ngram in ngrams:
     list(carbon_keywords_index.values())].todense()
 
     carbon_keyword_df = pd.DataFrame(carbon_keyword_matrix,
-    columns=list(carbon_keywords_index.keys()))
+    columns=list(carbon_keywords_index.keys()), index=text_df['date'].values)
     print(carbon_keyword_df.head())
 
     print((carbon_keyword_df > 0).sum(axis=0))
-
     carbon_keyword_df.to_csv(f'./data/merged_articles_carbon_keyword_term_document_matrix_ngram_{ngram}.csv')

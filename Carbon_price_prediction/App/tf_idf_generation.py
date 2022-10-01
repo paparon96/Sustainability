@@ -20,16 +20,7 @@ df = pd.concat(dfs, axis=1)
 print(df.shape)
 print(df.head())
 
-
-id_date_map_df = pd.read_csv(f'./data/lemmatized_merged_articles.csv',
-                             index_col=0)
-print(id_date_map_df.shape)
-
 # Data preprocesing
-
-# Reindex keyword counts by dates
-df = df.rename(index=id_date_map_df['date'].squeeze().to_dict())
-print(df.head())
 
 # Sanity check
 print(min(df.index))

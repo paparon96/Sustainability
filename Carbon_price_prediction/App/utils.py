@@ -21,7 +21,7 @@ def tf_idf(df: pd.DataFrame) -> pd.DataFrame:
 
     """
 
-    # Count term occurences across documents (dates in ur case)
+    # Count term occurences across documents (dates in our case)
     nt = (df > 0).sum(axis=0)
 
     # Broadcast to dataframe for compatible shapes

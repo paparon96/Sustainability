@@ -1,11 +1,17 @@
 # Import packages
+from datetime import datetime, timedelta
+
 import gdelt
 import pandas as pd
 
 # Parameters
 prev_date_offset = 1
-prev_business_day = pd.to_datetime('today') - pd.tseries.offsets.BDay(prev_date_offset)
-date = prev_business_day.strftime("%Y-%m-%d")
+business_calendar = False
+if business_calendar:
+    prev_date = pd.to_datetime('today') - pd.tseries.offsets.BDay(prev_date_offset)
+else:
+    prev_date = datetime.now() - timedelta(1)
+date = prev_date.strftime("%Y-%m-%d")
 print(date)
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]
 

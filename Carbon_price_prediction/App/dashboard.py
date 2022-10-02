@@ -22,6 +22,7 @@ rolling_corr_length = 30
 
 control_data_display = False
 detailed_tf_idf_keyword_group_data_display = False
+research_paper_period = True
 
 # Constants
 control_var_name_map = {'gas_price': 'gas prices',
@@ -31,7 +32,7 @@ control_var_name_map = {'gas_price': 'gas prices',
 'coal_price': 'coal prices',
 'stock_market_index_level': 'stock market index',}
 
-keyword_var_name_map = {'0': 'Aggregated score',
+keyword_var_name_map = {'0': 'Aggregated',
 'emissions': 'Emissions',
 'fossil_fuel': 'Fossil fuels',
 'gas': 'Gas',
@@ -76,11 +77,17 @@ end_date = st.sidebar.slider(
     max_value=max(daily_prices.index).to_pydatetime(),
     format="YYYY-MM-DD")
 
-tf_idf = pd.read_csv(f'../Data/signals/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
+# Switch between research paper analysis vs online/up-to-date data
+if research_paper_period:
+    tf_idf_file_path = '../Data/signals'
+else:
+    tf_idf_file_path = './data'
+
+tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
                      index_col=0, parse_dates=True)
 tf_idf.index.name = 'date'
 
-tf_idf_aggr = pd.read_csv(f'../Data/signals/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
+tf_idf_aggr = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
                      index_col=0, parse_dates=True)
 tf_idf_aggr.index.name = 'date'
 

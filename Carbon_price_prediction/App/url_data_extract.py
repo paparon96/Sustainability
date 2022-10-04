@@ -7,7 +7,7 @@ from goose3 import Goose
 
 
 # Parameters
-problematic_urls = ['sputniknews.com', 'confidencial.digital']
+problematic_urls = ['sputniknews.com', 'confidencial.digital', 'timesca.com']
 
 extractor = Goose()
 

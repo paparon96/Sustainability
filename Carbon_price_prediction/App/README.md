@@ -2,7 +2,7 @@
 Run the below commands in your terminal (while the current directory is the `/App` folder)
 1. `conda env create -f environment.yml`
 2. `conda activate carbon_dashboard`
-3. `python3 -c "import nltk; nltk.download('all')"`
+3. `python -c "import nltk; nltk.download('all')"`
 
 # Data collection/processing steps:
 The below steps can be run compactly through this shell script: `time ./data_update.sh` (around 2 minutes for 1 day's data).

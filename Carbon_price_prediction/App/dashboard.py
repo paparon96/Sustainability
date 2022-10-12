@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+import altair as alt
 import streamlit as st
 
 # Custom functions
@@ -18,6 +19,7 @@ glossary_source = 'lemmatized_grouped_custom' # 'BBC' or 'IPCC' or 'custom' or '
 version = '' # 'new' or '' for old (in case of BBC), otherwise use ''
 rolling_mean_length = 30
 dep_var = 'carbon_price'
+prediction_varname = 'prediction'
 rolling_corr_length = 30
 
 control_data_display = False
@@ -160,6 +162,24 @@ st.download_button(
    "text/csv",
    key='download-csv'
 )
+
+# Price forecast graph
+daily_prices[prediction_varname] = daily_prices[dep_var] + \
+                                   np.random.normal(scale=0.1*np.std(daily_prices[dep_var]),
+                                                    size=len(daily_prices))
+daily_prices['Date'] = daily_prices.index
+
+df_melted = pd.melt(daily_prices[[dep_var, prediction_varname, 'Date']].\
+                    rename(columns = {dep_var: 'actual'}),
+                    id_vars=['Date'],
+                    var_name='Value',
+                    value_name='EU ETS carbon price')
+c = alt.Chart(df_melted,
+title='Actual vs predicted daily EU ETS carbon prices').mark_line().encode(
+x='Date', y='EU ETS carbon price', color='Value').interactive()
+
+st.subheader(f'Forecasting EU ETS carbon prices')
+st.altair_chart(c, use_container_width=True)
 
 st.markdown(
 """

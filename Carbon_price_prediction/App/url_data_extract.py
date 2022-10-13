@@ -7,7 +7,8 @@ from goose3 import Goose
 
 
 # Parameters
-problematic_urls = ['sputniknews.com', 'confidencial.digital', 'timesca.com']
+problematic_urls = ['sputniknews.com', 'confidencial.digital', 'timesca.com',
+                    'aa.com.tr']
 
 extractor = Goose()
 
@@ -34,6 +35,12 @@ async def main():
     urls = list(filtered_events.sourceurl)
     # Filter out problematic URL-s
     urls = [url for url in urls if all([problematic_url not in url for problematic_url in problematic_urls])]
+    # import requests
+    # for url in urls:
+    #     try:
+    #         r = requests.head(url)
+    #     except:
+    #         print(url)
     async with aiohttp.ClientSession() as session:
         htmls = await fetch_all(session, urls)
         df = pd.DataFrame({'url': urls, 'html': htmls})

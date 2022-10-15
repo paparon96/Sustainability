@@ -26,6 +26,7 @@ rolling_corr_length = 30
 control_data_display = False
 detailed_tf_idf_keyword_group_data_display = False
 research_paper_period = True
+streamlit_cloud_deployment = True
 
 # Constants
 control_var_name_map = {'gas_price': 'gas prices',
@@ -61,8 +62,15 @@ The emissions trading system is a key driver of emissions reduction in the EU. C
 """
 )
 
+# Set path
+if streamlit_cloud_deployment:
+    base_path = '/app/sustainability/Carbon_price_prediction/App'
+else:
+    base_path = '.'
+
+
 # Data import
-daily_prices = pd.read_csv(f"{Path.cwd()}/../Data/new_merged_dataset.csv", index_col=0,
+daily_prices = pd.read_csv(f"{base_path}/../Data/new_merged_dataset.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
 daily_prices.index.name = 'date'
 
@@ -82,9 +90,9 @@ end_date = st.sidebar.slider(
 
 # Switch between research paper analysis vs online/up-to-date data
 if research_paper_period:
-    tf_idf_file_path = f'{Path.cwd()}/../Data/signals'
+    tf_idf_file_path = f'{base_path}/../Data/signals'
 else:
-    tf_idf_file_path = f'{Path.cwd()}/data'
+    tf_idf_file_path = f'{base_path}/data'
 
 tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
                      index_col=0, parse_dates=True)

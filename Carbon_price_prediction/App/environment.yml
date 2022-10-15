@@ -1,4 +1,4 @@
-name: carbon_price_dashboard
+name: base
 channels:
  - conda-forge
  - defaults

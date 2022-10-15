@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 from datetime import datetime
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import altair as alt
@@ -61,7 +62,7 @@ The emissions trading system is a key driver of emissions reduction in the EU. C
 )
 
 # Data import
-daily_prices = pd.read_csv( "../Data/new_merged_dataset.csv", index_col=0,
+daily_prices = pd.read_csv(f"{Path.cwd()}/../Data/new_merged_dataset.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
 daily_prices.index.name = 'date'
 
@@ -81,9 +82,9 @@ end_date = st.sidebar.slider(
 
 # Switch between research paper analysis vs online/up-to-date data
 if research_paper_period:
-    tf_idf_file_path = '../Data/signals'
+    tf_idf_file_path = f'{Path.cwd()}/../Data/signals'
 else:
-    tf_idf_file_path = './data'
+    tf_idf_file_path = f'{Path.cwd()}/data'
 
 tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
                      index_col=0, parse_dates=True)

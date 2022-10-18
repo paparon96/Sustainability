@@ -1,12 +1,19 @@
-FROM mambaorg/micromamba:0.15.3
-USER root
-RUN mkdir /opt/carbon_price_dashboard
-RUN chmod -R 777 /opt/carbon_price_dashboard
-WORKDIR /opt/carbon_price_dashboard
-USER micromamba
+FROM python:3.9-slim
+
+EXPOSE 8501
+
+WORKDIR /app/sustainability/Carbon_price_prediction/App
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY . .
-RUN micromamba install -y -n base -f app_env.yml && \
-   micromamba clean --all --yes
-USER root
-RUN chmod a+x run_dashboard.sh
-CMD ["./run_dashboard.sh"]
+COPY ./data/research_paper/new_merged_dataset.csv /app/sustainability/Carbon_price_prediction/Data/new_merged_dataset.csv
+COPY ./data/research_paper/signals /app/sustainability/Carbon_price_prediction/Data/signals
+
+RUN pip3 install -r requirements.txt
+
+ENTRYPOINT ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]

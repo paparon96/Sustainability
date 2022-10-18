@@ -36,7 +36,7 @@ control_var_name_map = {'gas_price': 'gas prices',
 'coal_price': 'coal prices',
 'stock_market_index_level': 'stock market index',}
 
-keyword_var_name_map = {'0': 'Aggregated',
+keyword_var_name_map = {'0': 'Total',
 'emissions': 'Emissions',
 'fossil_fuel': 'Fossil fuels',
 'gas': 'Gas',
@@ -45,7 +45,7 @@ keyword_var_name_map = {'0': 'Aggregated',
 }
 
 #### DASHBOARD ####
-st.title('EU ETS news tracker')
+st.title('EU Climate Change News Index Dashboard')
 
 st.markdown(
 """
@@ -55,6 +55,7 @@ st.markdown(
 - Aron Pap
 """
 )
+
 st.markdown(
 """
 # Paper abstract
@@ -131,8 +132,10 @@ if control_data_display:
     st.subheader(f'Rolling {rolling_corr_length}-days correlation between returns of EU ETS carbon prices and selected other variables')
     st.line_chart(corr_ts)
 
+tf_idf_colnames = list(tf_idf.columns)
 selected_keyword_group = st.sidebar.selectbox('Select keyword group for TF-IDF score time series analysis',
-                                   list(tf_idf.columns))
+                                   tf_idf_colnames,
+                                   index=tf_idf_colnames.index('Total'))
 
 if detailed_tf_idf_keyword_group_data_display:
     st.subheader(f'TF-IDF score history for keyword group: {selected_keyword_group} \
@@ -152,7 +155,7 @@ ax1.tick_params(axis='x', rotation=60)
 
 ax2 = ax1.twinx()
 ax2.plot(tf_idf[[selected_keyword_group]].rolling(rolling_mean_length).mean(),
-         label=f'{selected_keyword_group} keyword score', color='darkorange')
+         label=f'ECCNI - {selected_keyword_group}', color='darkorange')
 ax2.set_ylabel('TF-IDF score')
 ax2.legend(loc=1)
 ax2.tick_params(axis='x', rotation=60)
@@ -189,6 +192,74 @@ x='Date', y='EU ETS carbon price', color='Value').interactive()
 
 st.subheader(f'Forecasting EU ETS carbon prices')
 st.altair_chart(c, use_container_width=True)
+
+st.markdown(
+"""
+# Methodology
+The aim of this study is to compose the ECCNI and to incorporate this index into the forecasts of ETS prices. The following subsection outlines the methodology of the index construction.
+
+## Article collection
+Our ECCNI relies on the GDELT database that gathers a wide range of online news with daily frequency. Thus, to focus our analysis, we restricted the dataset to the articles where the actor is \emph{European Union} or \emph{EU} and extracted their URL-s. We chose to filter on the actor to focus on issues and policies that are dealt by the EU. Moreover, the carbon prices are affected by global trends as well; consequently, filtering based on geography would not be adequate.
+
+Moreover, we removed the articles from the database that are coming from unreliable sources. For this purpose we used one of the most cited media bias resource, Media Bias Fact Check (MBFC) \citep{mediabias}. We removed the articles from the data that appeared on ‘questionable’ websites according to the ‘Factual/Sourcing’ category of MBFC\footnote{We are grateful to Courtney Pitcher who fetched the data from MBFC and published an organized dataset on her blog \citep{my_pitcher}.}.
+
+
+After the filtering, the overall number of news sites reduced from 9,497 to 719 from which our web scraper collected 27,777 articles.
+
+## Feature generation workflow
+
+We performed basic string pre-processing steps on the raw texts using the Natural Language Toolkit (NLTK) package \citep{nltk_package}. This package was also used to lemmatize words with WordNetLemmatizer, which is a more advanced solution than standard stemming because of the addition of morphological analysis.
+Since our keyword collection contains several multi-word elements, bigrams and trigrams were also formed with the lemmatizer to create the Term Frequency — Inverse Document Frequency (TF-IDF) matrix, which is one of the most commonly used methods for NLP. The TF-IDF method is an adequate tool to incorporate alternative information to the forecast of financial time series \citep{coyne2017forecasting,lubis2021effect,mittermayer2004forecasting,nikfarjam2010text}.
+
+The rows of our calculated matrix represent the individual articles, and its columns are the elements of the partially external, partially custom defined keyword list. We gathered our keywords around 5 main groups: fossil fuels, renewable energy carriers, energy policy, emissions and gas as an independent topic. We used keyword suggestions from Google Trends and our own intuition to expand the mentioned groups, the complete list of keywords is shown in Table \ref{tab:keywords}. We calculated the score for each keyword so it can also be used for further detailed analysis, but due to the high variance of the occurrences and the strong correlation between the keyword groups (shown on Figure \ref{fig:keyword_corr_heatmap}), we created the EU Climate Change News Index as the aggregated TF-IDF score of the groups\footnote{The TF-IDF scores of the EU Climate Change News Index and the keyword groups is available on the \href{https://ets-news-tracker.streamlitapp.com}{EU ETS news tracker dashboard}}.
+
+## Forecasting models
+
+The first (\emph{TF-IDF}) model includes the lags of the ETS price returns\footnote{By price return of variable $p$ we mean the log return: $\Delta log(p_t)=log(\frac{p_t}{p_{t-1}})$} ($r_{t}$) and the ECCNI ($z_{t}$) as predictors:
+
+"""
+)
+
+st.latex(r'''
+    \begin{equation}
+    r_{t}  = c + \sum_{i=1}^{k} \Bigr( \phi_{i} \, r_{t-i} + \theta_{i} \, z_{t-i} \Bigr),
+\end{equation}
+    ''')
+
+st.markdown(
+"""
+while the second model, called \emph{Control}, serves as a benchmark model which considers the lags of the ETS price returns and the fundamental driving factors of carbon prices based on the literature (gas, electricity, coal, oil and stock price returns represented by matrix $X$, and vector  $x_{t}$ for period \textit{t}):
+"""
+)
+
+st.latex(r'''
+\begin{equation}
+    r_{t}  = c +
+    \sum_{i=1}^{k} \Bigr( \phi_{i} \, r_{t-i} + \beta_{i}^T \, x_{t-i} \Bigr).
+\end{equation}
+    ''')
+
+st.markdown(
+"""
+The final, \emph{Full} model includes all predictors: the lags of the ETS price returns, the control variables' price returns and the ECCNI:
+"""
+)
+
+st.latex(r'''
+\begin{equation}
+\begin{split}
+    r_{t}  = c +
+    \sum_{i=1}^{k} \Bigr( \phi_{i} \, r_{t-i} + \beta_{i}^T \, x_{t-i} +
+    \theta_{i} \, z_{t-i} \Bigr).
+\end{split}
+\end{equation}
+    ''')
+
+st.markdown(
+"""
+We use OLS regression and ElasticNet shrinkage method\footnote{We used the following hyperparameters for grid search: $L1 = [0, \, 0.01, \, 0.05, \, 0.1, \, 0.3, \, 0.5, \, 0.7, \, 0.9, \, 0.95,$ $0.99, \, 1]$ and $\alpha = [0, \, 0.001, \, 0.003, \, 0.005, \, 0.007, \, 0.009, \, 0.0095, \, 0.01, \, 0.1, \, 0.3, \, 0.5, \, 0.7, \, 0.9, \, 0.95, \, 0.99, \, 0.999, \, 1]$} to estimate the models.
+"""
+)
 
 st.markdown(
 """

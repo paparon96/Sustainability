@@ -26,7 +26,7 @@ rolling_corr_length = 30
 control_data_display = False
 detailed_tf_idf_keyword_group_data_display = False
 research_paper_period = True
-streamlit_cloud_deployment = False
+streamlit_cloud_deployment = True
 display_price_forecast_graph = False
 
 # Constants

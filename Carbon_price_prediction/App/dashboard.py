@@ -28,6 +28,7 @@ detailed_tf_idf_keyword_group_data_display = False
 research_paper_period = True
 streamlit_cloud_deployment = True
 display_price_forecast_graph = False
+matplotlib_dual_plot = False
 
 # Constants
 control_var_name_map = {'gas_price': 'gas prices',
@@ -148,22 +149,41 @@ if detailed_tf_idf_keyword_group_data_display:
 st.subheader(f'Carbon price time series and TF-IDF score history for {selected_keyword_group} \
 ({rolling_mean_length}-days moving average)')
 
-fig = plt.figure()
+if matplotlib_dual_plot:
+    fig = plt.figure()
 
-ax1 = fig.add_subplot(111)
-ax1.plot(daily_prices[[dep_var]], label='EU ETS carbon price')
-ax1.set_ylabel('EU ETS carbon price')
-ax1.legend(loc=0)
-ax1.tick_params(axis='x', rotation=60)
+    ax1 = fig.add_subplot(111)
+    ax1.plot(daily_prices[[dep_var]], label='EU ETS carbon price')
+    ax1.set_ylabel('EU ETS carbon price')
+    ax1.legend(loc=0)
+    ax1.tick_params(axis='x', rotation=60)
 
-ax2 = ax1.twinx()
-ax2.plot(tf_idf[[selected_keyword_group]].rolling(rolling_mean_length).mean(),
-         label=selected_keyword_group, color='darkorange')
-ax2.set_ylabel('TF-IDF score')
-ax2.legend(loc=1)
-ax2.tick_params(axis='x', rotation=60)
+    ax2 = ax1.twinx()
+    ax2.plot(tf_idf[[selected_keyword_group]].rolling(rolling_mean_length).mean(),
+             label=selected_keyword_group, color='darkorange')
+    ax2.set_ylabel('TF-IDF score')
+    ax2.legend(loc=1)
+    ax2.tick_params(axis='x', rotation=60)
 
-st.pyplot(plt)
+    st.pyplot(plt)
+else:
+    tf_idf_melted = tf_idf.copy()
+    tf_idf_melted['Date'] = tf_idf_melted.index
+    tf_idf_melted[selected_keyword_group] = tf_idf_melted[[selected_keyword_group]].rolling(rolling_mean_length).mean()
+    tf_idf_melted = tf_idf_melted.merge(daily_prices[[dep_var]], left_index=True, right_index=True)
+
+    ets_price_line = alt.Chart(tf_idf_melted).mark_line(stroke='#5276A7', interpolate='monotone').encode(
+    alt.X('Date', axis=alt.Axis(title=None)), alt.Y(dep_var,
+    axis=alt.Axis(title='EU ETS carbon price', titleColor='#5276A7'))).interactive()
+
+    tf_idf_score = alt.Chart(tf_idf_melted).mark_line(stroke='#57A44C', interpolate='monotone').encode(
+    alt.X('Date', axis=alt.Axis(title=None)), alt.Y(selected_keyword_group,
+    axis=alt.Axis(title=['TF-IDF score', f'({selected_keyword_group})'], titleColor='#57A44C'))).interactive()
+
+    c = alt.layer(ets_price_line, tf_idf_score).resolve_scale(y='independent')
+
+    st.altair_chart(c, use_container_width=True)
+
 
 st.subheader('Raw data on TF-IDF scores')
 tmp_tf_idf = tf_idf.copy()

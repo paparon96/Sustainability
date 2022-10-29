@@ -81,14 +81,14 @@ daily_prices.index.name = 'date'
 
 start_date = st.sidebar.slider(
     "Analysis start date",
-    min_value=min(daily_prices.index).to_pydatetime(),
+    min_value=datetime(2018, 1, 1),
     value=datetime(2018, 1, 1),
     max_value=max(daily_prices.index).to_pydatetime(),
     format="YYYY-MM-DD")
 
 end_date = st.sidebar.slider(
     "Analysis end date",
-    min_value=min(daily_prices.index).to_pydatetime(),
+    min_value=datetime(2018, 1, 1),
     value=datetime(2021, 11, 30),
     max_value=max(daily_prices.index).to_pydatetime(),
     format="YYYY-MM-DD")
@@ -110,6 +110,15 @@ tf_idf_aggr.index.name = 'date'
 # Join aggregated TF-IDF score column
 tf_idf = tf_idf.join(tf_idf_aggr)
 tf_idf = tf_idf.rename(columns = keyword_var_name_map)
+
+# Keyword group selector
+tf_idf_colnames = list(tf_idf.columns)
+selected_keyword_group = st.sidebar.selectbox('Select keyword group for TF-IDF score time series analysis',
+                                   tf_idf_colnames,
+                                   index=tf_idf_colnames.index('ECCNI - Total'))
+
+# Add moving average for selected keyword group
+tf_idf[f'{selected_keyword_group}_ma'] = tf_idf[[selected_keyword_group]].rolling(rolling_mean_length).mean()
 
 # Filter control and TF-IDF dataframe for the relevant date range
 daily_prices = daily_prices[(daily_prices.index >= start_date) &
@@ -136,10 +145,6 @@ if control_data_display:
     st.subheader(f'Rolling {rolling_corr_length}-days correlation between returns of EU ETS carbon prices and selected other variables')
     st.line_chart(corr_ts)
 
-tf_idf_colnames = list(tf_idf.columns)
-selected_keyword_group = st.sidebar.selectbox('Select keyword group for TF-IDF score time series analysis',
-                                   tf_idf_colnames,
-                                   index=tf_idf_colnames.index('ECCNI - Total'))
 
 if detailed_tf_idf_keyword_group_data_display:
     st.subheader(f'TF-IDF score history for keyword group: {selected_keyword_group} \
@@ -148,6 +153,9 @@ if detailed_tf_idf_keyword_group_data_display:
 
 st.subheader(f'Carbon price time series and TF-IDF score history for {selected_keyword_group} \
 ({rolling_mean_length}-days moving average)')
+
+ets_price_line_on = st.checkbox('Display ETS price along with TF-IDF score time series',
+                                value=True)
 
 if matplotlib_dual_plot:
     fig = plt.figure()
@@ -169,7 +177,6 @@ if matplotlib_dual_plot:
 else:
     tf_idf_melted = tf_idf.copy()
     tf_idf_melted['Date'] = tf_idf_melted.index
-    tf_idf_melted[selected_keyword_group] = tf_idf_melted[[selected_keyword_group]].rolling(rolling_mean_length).mean()
     tf_idf_melted = tf_idf_melted.merge(daily_prices[[dep_var]], left_index=True, right_index=True)
 
     ets_price_line = alt.Chart(tf_idf_melted).mark_line(stroke='#5276A7', interpolate='monotone').encode(
@@ -177,16 +184,19 @@ else:
     axis=alt.Axis(title='EU ETS carbon price', titleColor='#5276A7'))).interactive()
 
     tf_idf_score = alt.Chart(tf_idf_melted).mark_line(stroke='#57A44C', interpolate='monotone').encode(
-    alt.X('Date', axis=alt.Axis(title=None)), alt.Y(selected_keyword_group,
+    alt.X('Date', axis=alt.Axis(title=None)), alt.Y(f'{selected_keyword_group}_ma',
     axis=alt.Axis(title=['TF-IDF score', f'({selected_keyword_group})'], titleColor='#57A44C'))).interactive()
 
-    c = alt.layer(ets_price_line, tf_idf_score).resolve_scale(y='independent')
+    if ets_price_line_on:
+        c = alt.layer(ets_price_line, tf_idf_score).resolve_scale(y='independent')
+    else:
+        c = alt.layer(tf_idf_score)
 
     st.altair_chart(c, use_container_width=True)
 
 
 st.subheader('Raw data on TF-IDF scores')
-tmp_tf_idf = tf_idf.copy()
+tmp_tf_idf = tf_idf.copy().drop(columns=[f'{selected_keyword_group}_ma'])
 tmp_tf_idf.index = tmp_tf_idf.index.to_series().apply(lambda x: x.strftime('%Y-%m-%d'))
 st.dataframe(tmp_tf_idf)
 

@@ -16,10 +16,6 @@ async def fetch(session, url):
     async with session.get(url) as response:
         if response.status != 200:
             return None
-        # if 'utf-8' not in response.headers['Content-Type'].lower():
-        # if response.headers['Content-Type'].lower() == 'text/html':
-        #     print(response.headers['Content-Type'])
-        #     return None
         return await response.text()
 
 async def fetch_all(session, urls):
@@ -35,12 +31,7 @@ async def main():
     urls = list(filtered_events.sourceurl)
     # Filter out problematic URL-s
     urls = [url for url in urls if all([problematic_url not in url for problematic_url in problematic_urls])]
-    # import requests
-    # for url in urls:
-    #     try:
-    #         r = requests.head(url)
-    #     except:
-    #         print(url)
+
     async with aiohttp.ClientSession() as session:
         htmls = await fetch_all(session, urls)
         df = pd.DataFrame({'url': urls, 'html': htmls})

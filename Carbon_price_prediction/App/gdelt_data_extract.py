@@ -10,7 +10,7 @@ business_calendar = False
 if business_calendar:
     prev_date = pd.to_datetime('today') - pd.tseries.offsets.BDay(prev_date_offset)
 else:
-    prev_date = datetime.now() - timedelta(1)
+    prev_date = datetime.now() - timedelta(prev_date_offset)
 date = prev_date.strftime("%Y-%m-%d")
 print(date)
 actor_filters = ["THE EUROPEAN UNION", "EUROPEAN UNION"]

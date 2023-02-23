@@ -63,7 +63,7 @@ st.markdown(
 # Paper abstract
 The emissions trading system is a key driver of emissions reduction in the EU. Carbon prices have been rapidly increasing since 2020 and accurate forecasting of EU Emissions Trading System (ETS) prices has become essential. In this paper, we propose a novel method to generate alternative predictors for ETS prices using GDELT online news database. We compose the EU climate change news index (ECCNI) by calculating term frequency–inverse document frequency (TF-IDF) feature for climate change related keywords. As climate policies are widely discussed in the news, the index is capable of tracking the ongoing debate about climate change in the EU. Finally, we show that incorporating the ECCNI in a simple predictive model robustly improves forecasts of ETS prices compared to a control model where the traditional predictors of carbon prices are included.
 \n
-The complete research paper is available [online here](https://github.com/paparon96/Sustainability/blob/main/Carbon_price_prediction/Paper/EU_ETS_News_Index.pdf).
+The complete research paper is available [online here](https://doi.org/10.1016/j.frl.2023.103720).
 """
 )
 

@@ -67,6 +67,9 @@ The complete research paper is available [online here](https://doi.org/10.1016/j
 """
 )
 
+research_paper_period = st.sidebar.checkbox('Use data from the research paper period (vs most recent data)',
+                                value=True)
+
 # Set path
 if streamlit_cloud_deployment:
     base_path = '/app/sustainability/Carbon_price_prediction/App'
@@ -78,20 +81,6 @@ else:
 daily_prices = pd.read_csv(f"{base_path}/../Data/new_merged_dataset.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
 daily_prices.index.name = 'date'
-
-start_date = st.sidebar.slider(
-    "Analysis start date",
-    min_value=datetime(2018, 1, 1),
-    value=datetime(2018, 1, 1),
-    max_value=max(daily_prices.index).to_pydatetime(),
-    format="YYYY-MM-DD")
-
-end_date = st.sidebar.slider(
-    "Analysis end date",
-    min_value=datetime(2018, 1, 1),
-    value=datetime(2021, 11, 30),
-    max_value=max(daily_prices.index).to_pydatetime(),
-    format="YYYY-MM-DD")
 
 # Switch between research paper analysis vs online/up-to-date data
 if research_paper_period:
@@ -106,6 +95,20 @@ tf_idf.index.name = 'date'
 tf_idf_aggr = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
                      index_col=0, parse_dates=True)
 tf_idf_aggr.index.name = 'date'
+
+start_date = st.sidebar.slider(
+    "Analysis start date",
+    min_value=min(tf_idf.index).to_pydatetime(),
+    value=min(tf_idf.index).to_pydatetime(),
+    max_value=max(tf_idf.index).to_pydatetime(),
+    format="YYYY-MM-DD")
+
+end_date = st.sidebar.slider(
+    "Analysis end date",
+    min_value=min(tf_idf.index).to_pydatetime(),
+    value=max(tf_idf.index).to_pydatetime(),
+    max_value=max(tf_idf.index).to_pydatetime(),
+    format="YYYY-MM-DD")
 
 # Join aggregated TF-IDF score column
 tf_idf = tf_idf.join(tf_idf_aggr)

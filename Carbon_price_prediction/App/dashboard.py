@@ -68,7 +68,7 @@ The complete research paper is available [online here](https://doi.org/10.1016/j
 )
 
 research_paper_period = st.sidebar.checkbox('Use data from the research paper period (vs most recent data)',
-                                value=True)
+                                value=False)
 
 # Set path
 if streamlit_cloud_deployment:

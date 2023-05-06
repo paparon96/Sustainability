@@ -81,6 +81,7 @@ else:
 daily_prices = pd.read_csv(f"{base_path}/../Data/new_merged_dataset.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
 daily_prices.index.name = 'date'
+daily_prices.index = pd.to_datetime(daily_prices.index)
 
 # Switch between research paper analysis vs online/up-to-date data
 if research_paper_period:

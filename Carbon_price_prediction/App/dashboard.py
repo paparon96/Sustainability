@@ -9,7 +9,7 @@ import altair as alt
 import streamlit as st
 
 # Custom functions
-@st.cache
+@st.cache_data
 def convert_df(df):
    return df.to_csv().encode('utf-8')
 
@@ -72,7 +72,7 @@ research_paper_period = st.sidebar.checkbox('Use data from the research paper pe
 
 # Set path
 if streamlit_cloud_deployment:
-    base_path = '/app/sustainability/Carbon_price_prediction/App'
+    base_path = './Carbon_price_prediction/App'
 else:
     base_path = '.'
 

@@ -26,9 +26,10 @@ rolling_corr_length = 30
 control_data_display = False
 detailed_tf_idf_keyword_group_data_display = False
 research_paper_period = True
-streamlit_cloud_deployment = True
 display_price_forecast_graph = False
 matplotlib_dual_plot = False
+
+base_path = './Carbon_price_prediction/App'
 
 # Constants
 control_var_name_map = {'gas_price': 'gas prices',
@@ -69,12 +70,6 @@ The complete research paper is available [online here](https://doi.org/10.1016/j
 
 research_paper_period = st.sidebar.checkbox('Use data from the research paper period (vs most recent data)',
                                 value=False)
-
-# Set path
-if streamlit_cloud_deployment:
-    base_path = './Carbon_price_prediction/App'
-else:
-    base_path = '.'
 
 
 # Data import

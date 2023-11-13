@@ -12,11 +12,13 @@ problematic_urls = ['sputniknews.com', 'confidencial.digital', 'timesca.com',
 
 extractor = Goose()
 
-async def fetch(session, url):
-    async with session.get(url) as response:
-        if response.status != 200:
-            return None
-        return await response.text()
+async def fetch(session:aiohttp.ClientSession, url):
+    try:
+        async with session.get(url) as response:
+            if response.status != 200:
+                return None
+            return await response.text()
+    except: pass
 
 async def fetch_all(session, urls):
     tasks = []

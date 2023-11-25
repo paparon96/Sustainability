@@ -15,5 +15,5 @@ The below steps can be run compactly through this shell script: `time ./data_upd
 
 
 # Running the app
-* Execute `streamlit run dashboard.py`
+* Execute `streamlit run Carbon_price_prediction/App/dashboard.py` (from the root of the repository)
 * Navigate to `http://localhost:8501` in your browser

@@ -9,7 +9,7 @@ import altair as alt
 import streamlit as st
 
 # Custom functions
-@st.cache_data
+@st.cache_data # remove decorator if you want to run the app locally with older `streamlit` version!
 def convert_df(df):
    return df.to_csv().encode('utf-8')
 

@@ -11,7 +11,7 @@ extract_multiple_dates = True
 if extract_multiple_dates:
     tmp = pd.read_csv("./data/tf_idf_gdelt_lemmatized_aggregated_keywords.csv")
     start_date = pd.to_datetime(tmp.date.max()) # or specify manually
-    start_date += pd.tseries.offsets.BDay(1)
+    start_date += pd.tseries.offsets.Day(1)
     date_range = pd.date_range(start_date, pd.to_datetime('today'), freq="d")
     date_range = [date.strftime("%Y-%m-%d") for date in date_range]
     print(date_range)

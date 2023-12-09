@@ -13,8 +13,8 @@ if grouping:
                                 index_col=0).squeeze()
 
 
-dfs = [pd.read_csv(f'./data//merged_articles_carbon_keyword_term_document_matrix_ngram_{ngram}.csv',
-                   index_col=0)
+dfs = [pd.read_csv(f'./data/merged_articles_carbon_keyword_term_document_matrix_ngram_{ngram}.csv',
+                   index_col=0).rename_axis('date')
        for ngram in ngrams]
 df = pd.concat(dfs, axis=1)
 print(df.shape)

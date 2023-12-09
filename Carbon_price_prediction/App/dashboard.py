@@ -85,11 +85,11 @@ else:
     tf_idf_file_path = f'{base_path}/data'
 
 tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
-                     index_col=0, parse_dates=["date"])
+                     index_col=0, parse_dates=True)
 tf_idf.index.name = 'date'
 
 tf_idf_aggr = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
-                     index_col=0, parse_dates=["date"])
+                     index_col=0, parse_dates=True)
 tf_idf_aggr.index.name = 'date'
 
 start_date = st.sidebar.slider(

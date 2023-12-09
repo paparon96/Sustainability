@@ -9,7 +9,7 @@ import altair as alt
 import streamlit as st
 
 # Custom functions
-@st.cache_data # remove decorator if you want to run the app locally with older `streamlit` version!
+# @st.cache_data # remove decorator if you want to run the app locally with older `streamlit` version!
 def convert_df(df):
    return df.to_csv().encode('utf-8')
 
@@ -85,12 +85,13 @@ else:
     tf_idf_file_path = f'{base_path}/data'
 
 tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
-                     index_col=0, parse_dates=True)
-tf_idf.index.name = 'date'
+                     parse_dates=["date"])
+tf_idf = tf_idf.set_index("date")
 
 tf_idf_aggr = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
-                     index_col=0, parse_dates=True)
-tf_idf_aggr.index.name = 'date'
+                     parse_dates=["date"])
+tf_idf_aggr = tf_idf_aggr.set_index("date")
+
 
 start_date = st.sidebar.slider(
     "Analysis start date",

@@ -9,7 +9,7 @@ import altair as alt
 import streamlit as st
 
 # Custom functions
-# @st.cache_data # remove decorator if you want to run the app locally with older `streamlit` version!
+@st.cache_data # remove decorator if you want to run the app locally with older `streamlit` version!
 def convert_df(df):
    return df.to_csv().encode('utf-8')
 
@@ -94,16 +94,16 @@ tf_idf_aggr.index.name = 'date'
 
 start_date = st.sidebar.slider(
     "Analysis start date",
-    min_value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if type(min(tf_idf.index)) == "str" else min(tf_idf.index).to_pydatetime(),
-    value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if type(min(tf_idf.index)) == "str" else min(tf_idf.index).to_pydatetime(),
-    max_value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if type(max(tf_idf.index)) == "str" else max(tf_idf.index).to_pydatetime(),
+    min_value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if isinstance(min(tf_idf.index), str) else min(tf_idf.index).to_pydatetime(),
+    value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if isinstance(min(tf_idf.index), str) else min(tf_idf.index).to_pydatetime(),
+    max_value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if isinstance(max(tf_idf.index), str) else max(tf_idf.index).to_pydatetime(),
     format="YYYY-MM-DD")
 
 end_date = st.sidebar.slider(
     "Analysis end date",
-    min_value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if type(min(tf_idf.index)) == "str" else min(tf_idf.index).to_pydatetime(),
-    value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if type(max(tf_idf.index)) == "str" else max(tf_idf.index).to_pydatetime(),
-    max_value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if type(max(tf_idf.index)) == "str" else max(tf_idf.index).to_pydatetime(),
+    min_value=datetime.strptime(min(tf_idf.index), "%Y-%m-%d") if isinstance(min(tf_idf.index), str) else min(tf_idf.index).to_pydatetime(),
+    value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if isinstance(max(tf_idf.index), str) else max(tf_idf.index).to_pydatetime(),
+    max_value=datetime.strptime(max(tf_idf.index), "%Y-%m-%d") if isinstance(max(tf_idf.index), str) else max(tf_idf.index).to_pydatetime(),
     format="YYYY-MM-DD")
 
 # Join aggregated TF-IDF score column

@@ -86,10 +86,12 @@ else:
 
 tf_idf = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_{glossary_source}_{version}keywords.csv',
                      parse_dates=["date"])
+tf_idf["date"] = pd.to_datetime(tf_idf["date"])
 tf_idf = tf_idf.set_index("date")
 
 tf_idf_aggr = pd.read_csv(f'{tf_idf_file_path}/{methodology}_{data_source}_lemmatized_aggregated_{version}keywords.csv',
                      parse_dates=["date"])
+tf_idf_aggr["date"] = pd.to_datetime(tf_idf_aggr["date"])
 tf_idf_aggr = tf_idf_aggr.set_index("date")
 
 

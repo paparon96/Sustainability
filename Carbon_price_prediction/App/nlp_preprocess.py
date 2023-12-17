@@ -15,6 +15,8 @@ from utils import remove_accents
 # Import data
 raw_text = pd.read_csv( "./data/article_text.csv")
 raw_text = raw_text.rename(columns={'sqldate': 'date'})
+# Convert string to proper date
+raw_text["date"] = pd.to_datetime(raw_text["date"], format="%Y%m%d")
 print(raw_text.head())
 print(raw_text.shape)
 

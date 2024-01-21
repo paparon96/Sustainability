@@ -15,6 +15,8 @@ from utils import remove_accents
 # Import data
 raw_text = pd.read_csv( "./data/article_text.csv")
 raw_text = raw_text.rename(columns={'sqldate': 'date'})
+# Convert string to proper date
+raw_text["date"] = pd.to_datetime(raw_text["date"], format="%Y%m%d")
 print(raw_text.head())
 print(raw_text.shape)
 
@@ -100,6 +102,10 @@ print(lemmatized_text_df.head())
 
 # Export results
 fname = './data/lemmatized_merged_articles.csv'
+# Note that the existing `lemmatized_merged_articles.csv` file
+# needs to be downloaded from Google Drive (more specifically from the `git_lfs_replacement` folder on Google Drive, because it was too large for Git LFS)
+# and copied to the `/data` folder first before running this script!
+# And then after running the script, the updated `lemmatized_merged_articles.csv` file needs to be uploaded to Google Drive (more specifically to the `git_lfs_replacement` folder on Google Drive)!
 if os.path.isfile(fname):
     print("Appending to existing file")
     text_df = pd.read_csv( "./data/lemmatized_merged_articles.csv", index_col=0)

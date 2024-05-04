@@ -36,6 +36,7 @@ agg_df = df.groupby(df.index).sum()
 
 # Generate TF-IDF scores
 tf_idf_df = tf_idf(agg_df)
+tf_idf_df.index = pd.to_datetime(tf_idf_df.index)
 
 # Export results
 grouping_flag = '_grouped' if grouping else ''
@@ -44,4 +45,5 @@ tf_idf_df.to_csv(f'./data/tf_idf_gdelt_lemmatized{grouping_flag}_custom_keywords
 # Aggregated keyword matrix
 agg_keyword_index_df = df.groupby(df.index).sum().sum(axis=1)
 agg_keyword_index_tf_idf_df = tf_idf(agg_keyword_index_df)
+agg_keyword_index_tf_idf_df.index = pd.to_datetime(agg_keyword_index_tf_idf_df.index)
 agg_keyword_index_tf_idf_df.to_csv(f'./data/tf_idf_gdelt_lemmatized_aggregated_keywords.csv')

@@ -73,8 +73,7 @@ research_paper_period = st.sidebar.checkbox('Use data from the research paper pe
 
 
 # Data import
-# TODO: Change to latest merged_dataset csv before merging!
-daily_prices = pd.read_csv(f"{base_path}/../Data/merged_dataset_2024_05_04.csv", index_col=0,
+daily_prices = pd.read_csv(f"{base_path}/../Data/merged_dataset_2024_05_06.csv", index_col=0,
                          parse_dates=True, dayfirst=True)
 daily_prices.index.name = 'date'
 daily_prices.index = pd.to_datetime(daily_prices.index)
@@ -231,10 +230,10 @@ if display_price_forecast_graph:
     st.altair_chart(c, use_container_width=True)
 
 
-# TODO: Potentially add new source: https://energy.instrat.pl/en/prices/eu-ets/
 st.markdown(
 """
 # Sources / References
-- [EU ETS data source](https://ember-climate.org/data/data-tools/carbon-price-viewer/)
+- [Historical EU ETS data source](https://ember-climate.org/data/data-tools/carbon-price-viewer/)
+- [Current EU ETS data source](https://www.investing.com/commodities/carbon-emissions-historical-data)
 """
 )
